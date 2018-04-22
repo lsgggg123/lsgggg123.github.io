@@ -4,7 +4,7 @@ title: '测试文章'
 subtitle: '或许是最漂亮的Jekyll主题'
 date: 2018-04-22
 categories: 技术
-cover: 'http://on2171g4d.bkt.clouddn.com/jekyll-theme-h2o-postcover.jpg'
+cover: 'http://res.lsgggg123.com/res/image/head-bg.jpg'
 tags: jekyll 技术无关
 ---
 
