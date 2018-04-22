@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Spring MVC 源码解析'
-subtitle: ''
+subtitle: 'Spring MVC 源码解析记录'
 date: 2018-04-22
 categories: 技术
 tags: 技术 java Spring SpringMVC
@@ -10,13 +10,13 @@ tags: 技术 java Spring SpringMVC
 Spring MVC是SpringFrameWork提供的构建Web应用程序的全功能MVC模块，是一个Web MVC框架。由于Spring MVC出色的运行效率、优秀的设计、和Spring的无缝对接等等原因使得它打败了其他同类型竞争者（典型代表例如Strust2），成为当前web开发中应用最多的框架。今天我们来从Spring MVC框架的源码来深度分析这个框架的运行原理。
 
 ### Spring MVC的架构图
-![image](../assets/img/20180422/e1b3f9748e1b40ff9edbd2b2d5142d54.jpg)
+![image](/assets/img/20180422/e1b3f9748e1b40ff9edbd2b2d5142d54.jpg)
 
 ### 入口配置
 我们知道，集成Spring MVC第一步要在项目的webapp/WEB-INF目录下的web.xml里面配置一个Spring MVC的前端控制器DispatcherServlet，DispatcherServlet控制着http请求是否交给Spring MVC来处理，因此DispatcherServlet作为Spring MVC的入口，是整个Spring MVC的核心，我们的源码分析也是从DispatcherServlet开始的。下面是一段典型的Spring MVC配置文件：
 
 
-```
+```xml
 <context-param>
 	<param-name>contextConfigLocation</param-name>
 	<param-value>classpath:spring/spring.xml</param-value>
@@ -42,7 +42,7 @@ Spring MVC是SpringFrameWork提供的构建Web应用程序的全功能MVC模块�
 
 通过这个配置文件，我们可以得知DispatcherServlet的本质是一个Servlet。我们查看它的继承树可以查到它继承自HttpServlet，HttpServlet又实现了接口Servlet，所以说DispatcherServlet是一个Servlet。
 
-![image](../assets/img/20180422/5dadce8c3af24cdd80aa57529c673692.png)
+![image](/assets/img/20180422/5dadce8c3af24cdd80aa57529c673692.png)
 
 提到Servlet，大家一定都不陌生，我们的Java Web学习之旅就是从Jsp/Servlet开始的。Spring MVC虽然复杂，但是核心的DispacherServlet却是一个Servlet，一定遵从Servlet生命周期的三个阶段，就是所谓的“init-service-destroy”。这里要多说一句，一般的Servlet的生命周期，init初始化是在这个Servlet第一次访问的时候做的，只初始化一次，持续提供服务，直到Web容器停止才会调用destroy销毁方法，而DispatcherServlet因为初始化的时候做的操作太多，一般来说会配置一个<load-on-startup>1</load-on-startup>，这样容器启动的时候就可以初始化这个Servlet（调用Servlet的init()方法）。下面我们就看一下DispacherServlet是怎么进行初始化的。
 
@@ -50,7 +50,7 @@ Spring MVC是SpringFrameWork提供的构建Web应用程序的全功能MVC模块�
 DispatcherServlet的init方法实现在父类HttpServletBean中，代码如下（省略了部分的log和注释，下同）。我们加一个断点，然后启动容器来看一下代码的执行情况。
 
 
-```
+```java
 @Override
 public final void init() throws ServletException {
 	try {
@@ -74,14 +74,14 @@ public final void init() throws ServletException {
 #### a) try-catch快：
 这段的代码主要从web.xml的init-param节点读取DispatcherServlet的配置，比如读取了Spring MVC配置文件的位置。然后把DispatcherServlet封装成BeanWrapper，BeanWrapper的主要功能，就是对任何一个bean，进行属性的设置和方法的调用。最后通过BeanWrapper对DispatcherServlet做一些初始化工作，把init-param节点的配置设置到DispatcherServlet成员属性里面，具体来说，就是Spring MVC配置文件的路径了。
 
-![image](../assets/img/20180422/a4bf3f520c6b49b3ae9dea44444cfe46.png)
+![image](/assets/img/20180422/a4bf3f520c6b49b3ae9dea44444cfe46.png)
 
 #### b）initServletBean()：
 
 非常重要，这段代码的主要作用是容器上下文的建立。这段代码在FrameworkServlet里面：
 
 
-```
+```java
 @Override
 protected final void initServletBean() throws ServletException {
 	long startTime = System.currentTimeMillis();
@@ -106,7 +106,7 @@ protected final void initServletBean() throws ServletException {
 initWebApplicationContext()方法内的逻辑如下：
 
 
-```
+```java
 protected WebApplicationContext initWebApplicationContext() {
     // 1.
 	WebApplicationContext rootContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
@@ -163,7 +163,7 @@ protected WebApplicationContext initWebApplicationContext() {
 6. 三种创建webApplicationContext，都会调用onRefresh(wac)，onRefresh方法在DispatcherServlet中，如下：
 
 
-```
+```java
 @Override
 protected void onRefresh(ApplicationContext context) {
 	initStrategies(context);
@@ -187,7 +187,7 @@ protected void initStrategies(ApplicationContext context) {
 我们来看最重要的initHandlerMappings()，无非是通过webApplicationContext.getBean()之类的方法来获取HandlerMapping.class类型的bean，设置到自己的一个成员属性为handlerMappings的List里面。
 
 
-```
+```java
 private void initHandlerMappings(ApplicationContext context) {
 	this.handlerMappings = null;
 
@@ -211,7 +211,7 @@ private void initHandlerMappings(ApplicationContext context) {
 根据我们的Servlet相关的知识，当浏览器发起了一次http请求，如果满足url-mapping里面配置的路径，就会进入到相关Servlet的service方法。这个方法在DispatcherServlet的父类FrameworkServlet里面，FrameworkServlet的service()。service()调用了processRequest()主要做了将当前请求的Locale对象和属性，分别设置到LocaleContextHolder和RequestContextHolder这两个抽象类中的ThreadLocal对象中，也就是分别将这两个东西和请求线程做了绑定，调用doService(request, response)后，发出一个RequestHandledEventd的事件。doService()在DispatcherServlet里面实现，主要把DispatcherServlet当前的一些成员属性例如webApplicationContext等等设置到request里面去，这样就可以在任意处理request的地方使用。然后调用doDispatch(request, response)，doDispatch()这个方法做的就是把url的映射到具体的Controller。我们看下主要的源码：
 
 
-```
+```java
 try {
 	processedRequest = checkMultipart(request);
 	multipartRequestParsed = (processedRequest != request);
@@ -276,7 +276,7 @@ HandlerAdapter是哪里来的？如果配置文件里面加了<mvc:annotation-dr
 我们把最关键的代码拿来，再跟着看下最上方的架构图，是不是一切都清楚了？
 
 
-```
+```java
 if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 
     return;
@@ -291,7 +291,7 @@ mappedHandler.applyPostHandle(processedRequest, response, mv);
 观察ha.handle()的方法参数，可以看到有request，有response，有handler，request可以拿到所有的请求数据，handler可以拿到Controller的具体方法信息，那么调用这个Controller就没有任何困难了，我们还是来跟一下具体的代码吧，经过一些方法调用，ha.handle(...) -> RequestMappingHandlerAdapter.handleInternal(...) -> invokeHandlerMethod()， 我们最终锁定在invocableMethod.invokeAndHandle(webRequest, mavContainer)和getModelAndView(mavContainer, modelFactory, webRequest)这里：
 
 
-```
+```java
 protected ModelAndView invokeHandlerMethod(HttpServletRequest request,
 			HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
 
@@ -306,7 +306,7 @@ protected ModelAndView invokeHandlerMethod(HttpServletRequest request,
 invokeAndHandle这个方法的参数webRequest封装了request和response，mavContainer专门用来存放Controller执行之后的Model，还有一些跟View有关，例如Controller返回的view名字。getModelAndView这个方法拿到mavContainer在invokeAndHandle中放置的信息，我们分别跟进这两个方法：
 
 
-```
+```java
 public void invokeAndHandle(ServletWebRequest webRequest,
 		ModelAndViewContainer mavContainer, Object... providedArgs) throws Exception {
 
@@ -338,7 +338,7 @@ invokeForRequest(webRequest, mavContainer, providedArgs)
 会通过反射来调用Controller的具体方法，并且拿到Controller方法的返回值。Controller方法中放入Model的值也会收集到mavContainer中，例如下面的Controller就放了一个名字为article对象到Model里面，按照上文说的，这个对象会到mavContainer里面。
 
 
-```
+```java
 @RequestMapping(value="/article/{id}")
 public String article(Model model, @PathVariable("id") Integer id) {
     ServiceResult result = articleService.getArticle(id);
@@ -350,7 +350,7 @@ public String article(Model model, @PathVariable("id") Integer id) {
 this.returnValueHandlers.handleReturnValue(returnValue, getReturnValueType(returnValue), mavContainer, webRequest);
 
 
-```
+```java
 public void handleReturnValue(Object returnValue, MethodParameter returnType, ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
     HandlerMethodReturnValueHandler handler = this.selectHandler(returnValue, returnType);
     Assert.notNull(handler, "Unknown return value type [" + returnType.getParameterType().getName() + "]");
@@ -367,13 +367,13 @@ public void handleReturnValue(Object returnValue, MethodParameter returnType, Mo
 剩下的这部分很简单了，这部分工作在下面的代码中（DispatcherServlet的doDispatch()，上文贴过的代码最多的那堆的最后一行）。
 
 
-```
+```java
 processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
 ```
 
 跟进去然后来到
 
-```
+```java
 DispatcherServlet.render(mv, request, response);
 ```
 
