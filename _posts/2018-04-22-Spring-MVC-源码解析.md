@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Spring MVC 源码解析'
-subtitle: 'Spring MVC 源码解析记录'
+subtitle: '记录了自己调试SpringMVC源码的过程'
 date: 2018-04-22
 categories: 技术
 tags: 技术 java Spring SpringMVC
@@ -383,19 +383,19 @@ DispatcherServlet.render(mv, request, response);
 这篇文章本来想写了能够把Spring MVC的一些原理讲清楚，等写完了，我觉得并没有达到这个效果，一方面，我的水平还不够站在一个很高的角度去理解Spring MVC部分设计的原因，而且我也不认为有谁能看了哪一篇文章就掌握了Spring MVC的原理，最主要的还是要靠自己去调试，自己去理解。所以本文就姑且留着给我自己做备忘好了。
 
 ### 参考文章：
-1. load-on-startup：http://www.blogjava.net/xzclog/archive/2011/09/29/359789.html
+1. [load-on-startup](http://www.blogjava.net/xzclog/archive/2011/09/29/359789.html)
 
-2. BeanWrapper：http://my.oschina.net/u/2000201/blog/489752
+2. [BeanWrapper](http://my.oschina.net/u/2000201/blog/489752)
 
-3. spring启动t：http://www.cnblogs.com/davidwang456/archive/2013/03/12/2956125.html
+3. [spring启动t](http://www.cnblogs.com/davidwang456/archive/2013/03/12/2956125.html)
 
-4. FrameworkServle：http://www.cnblogs.com/davidwang456/p/4122842.html
+4. [FrameworkServle](http://www.cnblogs.com/davidwang456/p/4122842.html)
 
-5. Spring MVC源码剖析：http://my.oschina.net/lichhao/blog/100138
+5. [Spring MVC源码剖析](http://my.oschina.net/lichhao/blog/100138)
 
-6. Difference between applicationcontext and webapplicationcontext：http://stackoverflow.com/questions/11708967/what-is-the-difference-between-applicationcontext-and-webapplicationcontext-in-s
+6. [Difference between applicationcontext and webapplicationcontext](http://stackoverflow.com/questions/11708967/what-is-the-difference-between-applicationcontext-and-webapplicationcontext-in-s)
 
-7. DefaultServletHttpRequestHandler：http://perfy315.iteye.com/blog/2008763
+7. [DefaultServletHttpRequestHandler](http://perfy315.iteye.com/blog/2008763)
 
-8. mvc:annotation-driven：http://my.oschina.net/HeliosFly/blog/205343
+8. [mvc:annotation-driven](http://my.oschina.net/HeliosFly/blog/205343)
 
