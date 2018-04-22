@@ -2,7 +2,7 @@
 layout: post
 title: '使用nginx将web服务迁移到https'
 subtitle: 'HTTPS(Secure Hypertext Transfer Protocol)安全超文本传输协议 它是一个安全通信通道，它基于HTTP开发，用于在客户计算机和服务器之间交换信息。它使用安全套接字层(SSL)进行信息交换，简单来说它是HTTP的安全版。'
-date: 2018-04-22
+date: 2016-09-12
 categories: 技术
 tags: 技术 运维 nignx linux http 
 cover: '/assets/img/20180422/569f26cce4b0e85354ba68da.jpg'

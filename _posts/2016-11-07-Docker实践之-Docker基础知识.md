@@ -2,7 +2,7 @@
 layout: post
 title: 'Docker实践之一 -- Docker基础知识'
 subtitle: '如果你是一个服务端开发人员，那么这几年你一定听说过Docker的火爆，那么火爆的Docker到底是什么？Docker能做些什么，又是如何方便开发运维过程的？这篇文章将通过我自己对Docker的理解尝试着回答上述几个问题。'
-date: 2018-04-22
+date: 2016-11-07
 categories: 技术
 tags: 技术 运维 docker linux 
 cover: '/assets/img/20180422/docker-facebook.png'
