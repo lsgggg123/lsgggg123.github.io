@@ -20,7 +20,7 @@ footer:
 author: 'lsgggg123'
 nickname: 'ls'
 bio: '服务端开发者'
-avatar: '/assets/img/profile.jpg'
+avatar: 'https://www.lsgggg123.com/assets/img/profile.jpg'
 
 # Search
 search: true
